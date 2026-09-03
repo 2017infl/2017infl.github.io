@@ -62,14 +62,13 @@ a{ color:inherit; }
 
 /* ─── 共用元件 ─────────────────────────────── */
 
+/* 目前全站只有 Hero 的機構全名在用 */
 .eyebrow{
-  font-family:var(--f-mono);
-  font-size:.75rem;
+  font-size:clamp(1rem,1.6vw,1.1875rem);
   font-weight:700;
-  letter-spacing:.18em;
-  text-transform:uppercase;
+  letter-spacing:.16em;
   color:var(--red);
-  margin:0 0 18px;
+  margin:0 0 22px;
 }
 
 .btn{
