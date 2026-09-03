@@ -1,0 +1,927 @@
+/* ═══════════════════════════════════════════════
+   影響力教育基金會 Be an Influencer
+   淺色底 · 深藍為骨 · 品牌紅只在關鍵處出現
+   ═══════════════════════════════════════════════ */
+
+:root{
+  --paper:      #F6F7F9;
+  --card:       #FFFFFF;
+  --ink:        #0E1B2C;
+  --navy:       #133C66;
+  --navy-deep:  #0B2340;
+  --red:        #C8202E;
+  --red-soft:   #F4DDDF;
+  --muted:      #5C6878;
+  --rule:       #DCE2EA;
+  --rule-soft:  #E9EDF2;
+
+  --wrap: 1180px;
+  --gut: clamp(20px, 5vw, 56px);
+
+  --f-disp: 'Archivo', 'Noto Sans TC', system-ui, sans-serif;
+  --f-body: 'Archivo', 'Noto Sans TC', system-ui, sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+/* scroll-padding-top 要大於導覽列高度（74px），跳轉落點才不會被蓋住。
+   數值與 script.js 的 HASH_OFFSET 必須一致。 */
+html{ scroll-behavior:smooth; scroll-padding-top:96px; -webkit-text-size-adjust:100%; }
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.85;
+  letter-spacing:.015em;
+  -webkit-font-smoothing:antialiased;
+}
+
+img{ max-width:100%; display:block; }
+a{ color:inherit; }
+
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+.skiplink{
+  position:absolute; left:-9999px; top:0; z-index:200;
+  background:var(--navy); color:#fff; padding:12px 20px; text-decoration:none;
+}
+.skiplink:focus{ left:0; }
+
+:focus-visible{ outline:2px solid var(--red); outline-offset:3px; border-radius:2px; }
+
+.wrap{ width:100%; max-width:var(--wrap); margin-inline:auto; padding-inline:var(--gut); }
+
+/* ─── 共用元件 ─────────────────────────────── */
+
+.eyebrow{
+  font-family:var(--f-mono);
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--red);
+  margin:0 0 18px;
+}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:15px 30px;
+  font-family:var(--f-disp);
+  font-size:.9375rem; font-weight:600; letter-spacing:.04em;
+  text-decoration:none; border-radius:3px;
+  border:1px solid transparent;
+  transition:background .25s var(--ease), color .25s var(--ease),
+             border-color .25s var(--ease), transform .25s var(--ease);
+}
+.btn--solid{ background:var(--red); color:#fff; }
+.btn--solid:hover{ background:#A81724; transform:translateY(-2px); }
+.btn--ghost{ border-color:var(--rule); color:var(--navy); background:transparent; }
+.btn--ghost:hover{ border-color:var(--navy); background:#fff; transform:translateY(-2px); }
+
+/* ─── 導覽列 ───────────────────────────────── */
+
+/* 不使用 backdrop-filter：視覺效果有限，但會在部分瀏覽器造成
+   sticky 元素的重繪殘影。改用接近不透明的實色背景。 */
+.nav{
+  position:sticky; top:0; z-index:100;
+  background:var(--paper);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.nav.is-stuck{
+  border-bottom-color:var(--rule);
+  box-shadow:0 6px 20px -18px rgba(11,35,64,.5);
+}
+
+.nav__inner{
+  max-width:var(--wrap); margin-inline:auto; padding:0 var(--gut);
+  height:74px; display:flex; align-items:center; justify-content:space-between; gap:24px;
+}
+.nav__brand{ display:flex; align-items:center; flex-shrink:0; }
+.nav__brand img{ height:34px; width:auto; }
+
+.nav__links{ display:flex; align-items:center; gap:clamp(14px,2vw,28px); }
+.nav__links a{
+  font-size:.9375rem; font-weight:500; text-decoration:none; color:var(--ink);
+  position:relative; padding:6px 0; white-space:nowrap;
+  transition:color .2s var(--ease);
+}
+.nav__links a::after{
+  content:''; position:absolute; left:0; bottom:0; height:2px; width:100%;
+  background:var(--red); transform:scaleX(0); transform-origin:left;
+  transition:transform .3s var(--ease);
+}
+.nav__links a:hover{ color:var(--red); }
+.nav__links a:hover::after{ transform:scaleX(1); }
+
+.nav__cta{
+  background:var(--navy); color:#fff !important; padding:10px 20px !important;
+  border-radius:3px; font-weight:600;
+}
+.nav__cta::after{ display:none; }
+.nav__cta:hover{ background:var(--red); }
+
+.nav__toggle{
+  display:none; width:44px; height:44px; padding:0;
+  background:none; border:1px solid var(--rule); border-radius:3px; cursor:pointer;
+}
+.nav__toggle-bars,
+.nav__toggle-bars::before,
+.nav__toggle-bars::after{
+  display:block; width:18px; height:1.5px; background:var(--ink);
+  margin-inline:auto; transition:transform .3s var(--ease), opacity .2s var(--ease);
+}
+.nav__toggle-bars{ position:relative; }
+.nav__toggle-bars::before{ content:''; position:absolute; top:-6px; }
+.nav__toggle-bars::after{ content:''; position:absolute; top:6px; }
+.nav__toggle[aria-expanded="true"] .nav__toggle-bars{ background:transparent; }
+.nav__toggle[aria-expanded="true"] .nav__toggle-bars::before{ transform:translateY(6px) rotate(45deg); }
+.nav__toggle[aria-expanded="true"] .nav__toggle-bars::after{ transform:translateY(-6px) rotate(-45deg); }
+
+/* ─── 開頭 ─────────────────────────────────── */
+
+.hero{ padding-top:clamp(64px,10vw,120px); padding-bottom:clamp(48px,7vw,88px); }
+
+.hero__grid{ max-width:960px; }
+
+.hero__eyebrow{
+  opacity:0; transform:translateY(12px);
+  animation:rise .8s var(--ease) .1s forwards;
+}
+
+.hero__title{ margin:0 0 clamp(38px,5vw,56px); }
+
+.hero__en{
+  display:block;
+  font-family:var(--f-disp);
+  font-size:clamp(3.2rem,10vw,7.5rem);
+  font-weight:800;
+  line-height:.92;
+  letter-spacing:-.035em;
+  color:var(--navy-deep);
+  opacity:0; transform:translateY(24px);
+  animation:rise 1s var(--ease) .2s forwards;
+}
+.hero__en em{ font-style:normal; color:var(--red); }
+
+.hero__zh{
+  display:block;
+  margin-top:clamp(16px,2.5vw,26px);
+  font-size:clamp(1.35rem,3.4vw,2.15rem);
+  font-weight:700;
+  letter-spacing:.12em;
+  color:var(--navy);
+  opacity:0; transform:translateY(20px);
+  animation:rise 1s var(--ease) .38s forwards;
+}
+
+.hero__lead{
+  max-width:62ch; margin:0 0 38px;
+  font-size:clamp(1rem,1.4vw,1.125rem);
+  color:var(--muted);
+  opacity:0; transform:translateY(18px);
+  animation:rise 1s var(--ease) .52s forwards;
+}
+
+.hero__actions{
+  display:flex; flex-wrap:wrap; gap:14px;
+  opacity:0; transform:translateY(16px);
+  animation:rise 1s var(--ease) .66s forwards;
+}
+
+@keyframes rise{ to{ opacity:1; transform:none; } }
+
+/* ─── 生涯階段軸線（signature） ─────────────── */
+
+.axis{ margin-top:clamp(56px,9vw,110px); }
+
+.axis__caption{
+  font-size:.9375rem; font-weight:700; letter-spacing:.14em;
+  color:var(--navy-deep); margin:0 0 26px;
+  opacity:0; animation:rise 1s var(--ease) .8s forwards;
+}
+
+/* 橫向捲動容器：窄螢幕也維持橫向，捲動只發生在軸線內部 */
+.axis__scroll{
+  overflow-x:auto; overflow-y:hidden;
+  padding-bottom:6px; margin-inline:calc(var(--gut) * -1); padding-inline:var(--gut);
+  scrollbar-width:thin;
+}
+
+.axis__track{
+  list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(4,minmax(215px,1fr));
+  gap:0; position:relative;
+  /* 同上：盒子要撐到內容寬度，軸線才會畫滿四個階段 */
+  width:max-content; min-width:100%;
+  --axis-progress:12%;
+  transition:--axis-progress .45s var(--ease);
+}
+
+/* 紅線進度：與大事紀同一套做法。inherits 必須是 true，
+   值設在 .axis__track，畫線的卻是 ::before，不繼承就吃不到。 */
+@property --axis-progress{
+  syntax:'<percentage>';
+  inherits:true;
+  initial-value:12%;
+}
+
+/* 時間軸主線 */
+.axis__track::before{
+  content:''; position:absolute; left:0; right:0; top:7px; height:2px;
+  background:linear-gradient(to right,
+    var(--red) 0, var(--red) var(--axis-progress),
+    var(--rule) var(--axis-progress), var(--rule) 100%);
+  transform:scaleX(0); transform-origin:left;
+  animation:drawLine 1.4s var(--ease) .9s forwards;
+}
+/* 時間軸終點箭頭：標示方向 */
+.axis__track::after{
+  content:''; position:absolute; right:0; top:3px;
+  width:9px; height:9px; border-top:2px solid var(--rule); border-right:2px solid var(--rule);
+  transform:rotate(45deg) scale(0); transform-origin:center;
+  animation:arrowIn .5s var(--ease) 2.2s forwards;
+}
+@keyframes drawLine{ to{ transform:scaleX(1); } }
+@keyframes arrowIn{ to{ transform:rotate(45deg) scale(1); } }
+
+.axis__stop{
+  position:relative;
+  opacity:0; transform:translateY(14px);
+  animation:rise .7s var(--ease) forwards;
+  animation-delay:calc(1.1s + var(--i) * .16s);
+}
+
+.axis__link{
+  display:block; padding:26px 22px 20px 0;
+  text-decoration:none; color:inherit;
+  border-radius:3px;
+  transition:transform .3s var(--ease);
+}
+.axis__link:hover{ transform:translateY(-3px); }
+
+.axis__dot{
+  position:absolute; top:0; left:0;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--paper);
+  border:2px solid var(--navy);
+  transition:background .3s var(--ease), border-color .3s var(--ease),
+             box-shadow .3s var(--ease);
+}
+.axis__stop:first-child .axis__dot{ background:var(--red); border-color:var(--red); }
+
+/* 已經走過的階段：圓點轉紅但不發光，讓紅線看起來是連續的 */
+.axis__link.is-passed .axis__dot{ border-color:var(--red); }
+
+.axis__link:hover .axis__dot,
+.axis__link.is-active .axis__dot{
+  background:var(--red); border-color:var(--red);
+  box-shadow:0 0 0 5px var(--red-soft);
+}
+.axis__link.is-active .axis__name{ color:var(--red); }
+
+.axis__stage{
+  display:block; font-family:var(--f-mono); font-size:.75rem;
+  letter-spacing:.1em; color:var(--muted); margin-bottom:6px;
+}
+.axis__name{
+  display:block; font-size:1.375rem; font-weight:700;
+  letter-spacing:.08em; color:var(--navy-deep); line-height:1.3;
+  transition:color .3s var(--ease);
+}
+.axis__link:hover .axis__name{ color:var(--red); }
+.axis__en{
+  display:block; font-family:var(--f-mono); font-size:.7rem;
+  letter-spacing:.1em; color:var(--red); margin-bottom:8px;
+}
+.axis__desc{
+  display:block; font-size:.875rem; color:var(--muted); line-height:1.6;
+}
+
+/* 可點擊提示：箭頭常駐，游標移入時「查看詳情」浮現在旁邊 */
+.axis__more{
+  display:flex; align-items:center; gap:8px;
+  margin-top:14px; color:var(--red);
+  font-size:.8125rem; font-weight:700; letter-spacing:.08em;
+}
+.axis__more-arrow{
+  font-size:1.0625rem; line-height:1;
+  transition:transform .3s var(--ease);
+}
+.axis__more-text{
+  opacity:0; transform:translateX(-6px);
+  transition:opacity .3s var(--ease), transform .3s var(--ease);
+}
+.axis__link:hover .axis__more-arrow,
+.axis__link:focus-visible .axis__more-arrow{ transform:translateX(3px); }
+.axis__link:hover .axis__more-text,
+.axis__link:focus-visible .axis__more-text{ opacity:1; transform:none; }
+
+/* 從軸線跳過來時，短暫標示落點 */
+.pcard__title:target{ animation:landed 2.2s var(--ease) 1; }
+@keyframes landed{
+  0%,60%{ color:var(--red); }
+  100%{ color:var(--navy-deep); }
+}
+
+/* ─── 區塊骨架 ─────────────────────────────── */
+
+.section{ padding-block:clamp(72px,11vw,140px); }
+.section--tint{ background:#fff; border-block:1px solid var(--rule-soft); }
+.section--dark{ background:var(--navy-deep); color:#fff; }
+
+/* 區段標頭的三層階層：
+   1. 區段名稱（最大）  2. 一句陳述（中）  3. 補充說明（最小） */
+.shead{ max-width:760px; margin-bottom:clamp(44px,6vw,72px); }
+
+.shead__title{
+  margin:0;
+  font-size:clamp(2.1rem,5vw,3.6rem);
+  font-weight:900; line-height:1.2; letter-spacing:.04em;
+  color:var(--navy-deep);
+}
+.shead__statement{
+  /* 夠寬讓各頁的陳述句都排成一行，但仍有上限不會拉得太長 */
+  margin:20px 0 0; max-width:46ch;
+  font-size:clamp(1.125rem,2.1vw,1.5rem);
+  font-weight:700; line-height:1.5; letter-spacing:.06em;
+  color:var(--navy);
+  padding-left:16px; border-left:3px solid var(--red);
+}
+.shead__lead{
+  margin:20px 0 0; max-width:62ch;
+  font-size:1.0625rem; color:var(--muted);
+}
+
+.sub{ margin-top:clamp(56px,8vw,96px); }
+.sub__title{
+  margin:0 0 8px;
+  font-size:1.3125rem; font-weight:700; letter-spacing:.06em; color:var(--navy);
+  padding-bottom:16px; border-bottom:2px solid var(--navy-deep);
+}
+
+/* ─── 關於基金會 ───────────────────────────── */
+
+.about__intro{
+  display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
+  gap:clamp(32px,6vw,80px); align-items:center;
+}
+.about__story p{
+  margin:0 0 22px; font-size:1.0625rem; max-width:64ch;
+}
+.about__story p:last-child{ margin-bottom:0; }
+.about__story strong{ color:var(--red); font-weight:700; }
+
+/* 品牌頭像：從完整 logo 裁出頭部圖形（原圖 2127×1007，頭部在 x77 y97 w637 h710），
+   沿用已載入的 logo.png，不另外增加圖檔請求 */
+.about__mark{
+  position:relative; overflow:hidden;
+  width:100%; max-width:260px; aspect-ratio:637/710;
+  justify-self:center;
+}
+.about__mark img{
+  position:absolute;
+  top:-13.66%; left:-12.09%;
+  width:333.9%; max-width:none; height:auto;
+}
+
+/* 關於基金會底下的三個延伸頁面入口：與 Hero 的行動按鈕同一套排列與尺寸 */
+.subnav{
+  margin-top:clamp(36px,5vw,56px);
+  display:flex; flex-wrap:wrap; gap:14px;
+}
+
+/* 大事紀時間軸：年份常駐，內容游標移入才展開 */
+.tl{ margin-top:36px; }
+
+.tl__scroll{
+  overflow-x:auto; overflow-y:hidden;
+  margin-inline:calc(var(--gut) * -1); padding-inline:var(--gut);
+  padding-bottom:6px; scrollbar-width:thin;
+}
+.tl__track{
+  list-style:none; margin:0; padding:0; position:relative;
+  display:grid; grid-template-columns:repeat(9,minmax(96px,1fr));
+  /* 必須讓盒子撐到內容實際寬度，否則軸線與圓點的座標系不一致，
+     線會停在容器邊緣、畫不到後面幾個年份 */
+  width:max-content; min-width:100%;
+}
+/* 註冊成可動畫的自訂屬性，紅線才會「長過去」而不是瞬間跳。
+   inherits 必須是 true —— 值設在 .tl__track 上，但畫線的是 ::before，
+   不繼承的話偽元素只會拿到 initial-value，線永遠是灰的。 */
+@property --tl-progress{
+  syntax:'<percentage>';
+  inherits:true;
+  initial-value:1%;
+}
+.tl__track{
+  --tl-progress:1%;
+  transition:--tl-progress .45s var(--ease);
+}
+.tl__track::before{
+  content:''; position:absolute; left:0; right:0; top:7px; height:2px;
+  background:linear-gradient(to right,
+    var(--red) 0, var(--red) var(--tl-progress),
+    var(--rule) var(--tl-progress), var(--rule) 100%);
+}
+.tl__track::after{
+  content:''; position:absolute; right:0; top:3px;
+  width:9px; height:9px;
+  border-top:2px solid var(--rule); border-right:2px solid var(--rule);
+  transform:rotate(45deg);
+}
+
+.tl__year{
+  appearance:none; background:none; border:0; cursor:pointer;
+  display:block; position:relative; width:100%; text-align:left;
+  padding:26px 14px 10px 0; font:inherit;
+}
+.tl__dot{
+  display:block; position:absolute; top:0;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--paper); border:2px solid var(--navy);
+  transition:background .25s var(--ease), border-color .25s var(--ease),
+             box-shadow .25s var(--ease);
+}
+.tl__num{
+  display:block;
+  font-family:var(--f-mono); font-size:1rem; font-weight:500;
+  letter-spacing:.06em; color:var(--muted);
+  transition:color .25s var(--ease);
+}
+/* 已經走過的年份：圓點轉紅但不發光，讓紅線看起來是連續的 */
+.tl__year.is-passed .tl__dot{ border-color:var(--red); }
+.tl__year.is-passed .tl__num{ color:var(--navy); }
+
+.tl__year:hover .tl__dot,
+.tl__year.is-active .tl__dot{
+  background:var(--red); border-color:var(--red);
+  box-shadow:0 0 0 5px var(--red-soft);
+}
+.tl__year:hover .tl__num,
+.tl__year.is-active .tl__num{ color:var(--red); font-weight:700; }
+
+/* 內容面板：預留高度，切換年份時版面不跳動 */
+.tl__panels{
+  margin-top:26px; padding-top:26px; border-top:1px solid var(--rule);
+  min-height:132px;
+}
+.tl__hint{
+  margin:0; font-size:.9375rem; color:var(--muted); letter-spacing:.04em;
+}
+.tl__y{
+  margin:0 0 8px; font-family:var(--f-mono); font-size:1.5rem;
+  font-weight:500; letter-spacing:.04em; color:var(--red); line-height:1;
+}
+.tl__text{ margin:0; font-size:.9375rem; color:var(--muted); max-width:70ch; }
+
+/* JS 可用時才收合；JS 失效就整份攤開，內容不會消失 */
+.has-js .tl__panel{ display:none; }
+.has-js .tl__panel.is-active{ display:block; animation:tlIn .35s var(--ease); }
+.has-js .tl__hint.is-hidden{ display:none; }
+@keyframes tlIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+
+/* 人員 */
+.people{
+  margin-top:36px;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(228px,1fr)); gap:24px;
+}
+.person{
+  background:var(--card); border:1px solid var(--rule); border-radius:4px;
+  padding:22px; display:flex; flex-direction:column;
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.person:hover{
+  transform:translateY(-4px);
+  border-color:var(--navy);
+  box-shadow:0 16px 34px -20px rgba(11,35,64,.4);
+}
+.person__photo{
+  width:100%; aspect-ratio:1/1; object-fit:cover; object-position:center 22%;
+  border-radius:3px; background:var(--rule-soft); margin-bottom:18px;
+}
+.person__photo--tall{ object-position:center 18%; }
+
+.person__monogram{
+  width:100%; aspect-ratio:1/1; margin:0 0 18px; border-radius:3px;
+  background:linear-gradient(150deg,#EDF1F6,#DFE6EE);
+  color:var(--navy); font-size:2.75rem; font-weight:700; letter-spacing:.1em;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.person__name{
+  margin:0; font-size:1.125rem; font-weight:700; letter-spacing:.08em; color:var(--navy-deep);
+}
+.person__en{
+  display:block; font-family:var(--f-mono); font-size:.75rem;
+  font-weight:400; letter-spacing:.06em; color:var(--muted); margin-top:4px;
+}
+.person__role{
+  display:block; margin-top:8px;
+  font-family:var(--f-mono); font-size:.7rem; letter-spacing:.14em;
+  color:var(--red); font-weight:400;
+}
+.person__cv{
+  list-style:none; margin:16px 0 0; padding:16px 0 0; border-top:1px solid var(--rule-soft);
+  font-size:.8125rem; color:var(--muted); line-height:1.72;
+}
+.person__cv li{ position:relative; padding-left:13px; }
+.person__cv li::before{
+  content:''; position:absolute; left:0; top:.7em;
+  width:5px; height:1px; background:var(--red);
+}
+
+/* ─── 核心專案 ─────────────────────────────── */
+
+.stats{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px; background:var(--rule);
+  border:1px solid var(--rule); border-radius:4px; overflow:hidden;
+  margin-bottom:clamp(48px,7vw,84px);
+}
+.stat{ background:var(--card); padding:30px 26px; }
+.stat__n{
+  display:block; font-family:var(--f-disp);
+  font-size:clamp(2rem,3.6vw,2.85rem); font-weight:800;
+  letter-spacing:-.02em; line-height:1; color:var(--navy-deep);
+  font-variant-numeric:tabular-nums;
+}
+.stat__l{ display:block; margin-top:12px; font-size:.8125rem; color:var(--muted); letter-spacing:.04em; }
+
+.prog{ margin-bottom:clamp(48px,7vw,80px); }
+.prog:last-of-type{ margin-bottom:0; }
+
+
+.prog__body{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px;
+}
+
+.pcard{
+  background:var(--card); border:1px solid var(--rule); border-radius:4px;
+  padding:30px 28px; display:flex; flex-direction:column;
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.pcard:hover{
+  transform:translateY(-4px); border-color:var(--navy);
+  box-shadow:0 18px 40px -24px rgba(11,35,64,.42);
+}
+.pcard__title{
+  margin:0 0 8px; font-size:1.1875rem; font-weight:700;
+  letter-spacing:.05em; color:var(--navy-deep);
+}
+.pcard__partner{
+  margin:0 0 16px; font-family:var(--f-mono); font-size:.72rem;
+  letter-spacing:.06em; color:var(--red); line-height:1.6;
+}
+.pcard__text{ margin:0; font-size:.9375rem; color:var(--muted); }
+.pcard__meta{
+  margin:16px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
+  font-size:.8125rem; color:var(--muted); line-height:1.7;
+}
+.pcard__meta--quiet{ border-top:0; padding-top:4px; opacity:.78; }
+.pcard__link{ margin:18px 0 0; }
+.pcard__link a{
+  font-size:.875rem; font-weight:600; color:var(--red); text-decoration:none;
+  border-bottom:1px solid transparent; transition:border-color .25s var(--ease);
+}
+.pcard__link a:hover{ border-bottom-color:var(--red); }
+
+.chips{ list-style:none; display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; padding:0; }
+.chips li{
+  padding:5px 11px; border:1px solid var(--rule); border-radius:2px;
+  font-size:.78rem; color:var(--navy); background:#FAFBFC;
+}
+.chips--lg li{ font-size:.875rem; padding:8px 14px; background:var(--card); }
+.chips--sm li{ font-size:.75rem; padding:5px 10px; background:var(--card); color:var(--muted); }
+
+.facts{ list-style:none; margin:18px 0 0; padding:16px 0 0; border-top:1px solid var(--rule-soft); display:flex; flex-wrap:wrap; gap:6px 22px; }
+.facts li{ font-size:.8125rem; color:var(--muted); }
+.facts b{ color:var(--navy-deep); font-weight:700; }
+.facts--wide{ flex-direction:column; gap:8px; }
+.facts--wide b{ font-family:var(--f-mono); color:var(--red); margin-right:8px; font-weight:500; }
+
+.flow{ list-style:none; margin:18px 0 0; padding:0; display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.flow li{ font-size:.8125rem; color:var(--navy); }
+.flow li:not(:last-child)::after{ content:'→'; margin-left:8px; color:var(--red); }
+
+.partners{ margin-top:32px; display:grid; gap:32px; }
+.partners__label{
+  margin:0 0 14px; font-size:.9375rem; font-weight:700;
+  letter-spacing:.1em; color:var(--navy-deep);
+  display:flex; align-items:baseline; gap:10px;
+}
+.partners__count{
+  font-family:var(--f-mono); font-size:.72rem; font-weight:400;
+  letter-spacing:.08em; color:var(--red);
+}
+.partners .chips{ margin-top:0; }
+
+/* ─── 空狀態（最近活動 / 文章專欄） ─────────── */
+
+.empty{
+  border:1px dashed var(--rule); border-radius:4px;
+  padding:clamp(36px,6vw,60px); text-align:center; background:var(--card);
+}
+.empty__title{
+  margin:0 0 14px; font-size:1.25rem; font-weight:700;
+  letter-spacing:.08em; color:var(--navy-deep);
+}
+.empty__text{ margin:0 auto; max-width:56ch; font-size:.9375rem; color:var(--muted); }
+.empty__actions{ margin-top:28px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
+
+/* ─── 最近活動 ─────────────────────────────── */
+
+.event{
+  background:var(--card); border:1px solid var(--rule); border-radius:4px;
+  border-left:3px solid var(--red);
+  padding:clamp(28px,4vw,44px);
+}
+.event__tag{
+  display:inline-block; margin:0 0 16px; padding:5px 12px;
+  background:var(--red-soft); color:#8E1220; border-radius:2px;
+  font-family:var(--f-mono); font-size:.7rem; letter-spacing:.1em;
+}
+.event__date{
+  margin:0 0 10px; font-family:var(--f-mono);
+  font-size:.9375rem; letter-spacing:.04em; color:var(--red);
+}
+.event__title{
+  margin:0 0 12px; font-size:clamp(1.25rem,2.4vw,1.625rem);
+  font-weight:700; line-height:1.45; letter-spacing:.04em; color:var(--navy-deep);
+}
+.event__place{ margin:0; font-size:.9375rem; color:var(--muted); }
+.event__cta{ margin:26px 0 0; }
+
+/* ─── 媒體報導 ─────────────────────────────── */
+
+.press{ list-style:none; margin:0; padding:0; }
+.press__item{ border-bottom:1px solid var(--rule); }
+.press__item:first-child{ border-top:1px solid var(--rule); }
+
+.press__link{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px 32px;
+  align-items:baseline; padding:20px 4px;
+  text-decoration:none; color:inherit;
+  transition:padding-left .25s var(--ease), background .25s var(--ease);
+}
+.press__link:hover{ padding-left:14px; background:rgba(200,32,46,.035); }
+
+.press__t{
+  margin:0; font-size:.9875rem; font-weight:500;
+  color:var(--navy-deep); line-height:1.65;
+  transition:color .25s var(--ease);
+}
+.press__link:hover .press__t{ color:var(--red); }
+.press__t::after{
+  content:'↗'; margin-left:8px; font-size:.75em; color:var(--red);
+  opacity:0; transition:opacity .25s var(--ease);
+}
+.press__link:hover .press__t::after{ opacity:1; }
+
+.press__o{
+  margin:0; font-family:var(--f-mono); font-size:.72rem;
+  letter-spacing:.08em; color:var(--muted); white-space:nowrap;
+}
+
+.press__more{ margin:clamp(32px,5vw,48px) 0 0; }
+
+/* ─── 捐款頁 ───────────────────────────────── */
+
+/* 帳號用等寬字，一眼看得出分段，抄寫時不易看錯 */
+.contact__value--num{
+  font-family:var(--f-mono); letter-spacing:.04em; font-size:1.125rem;
+}
+
+.donate__note{
+  margin:24px 0 0; max-width:62ch;
+  font-size:.9375rem; color:var(--muted);
+  padding-left:16px; border-left:3px solid var(--rule);
+}
+.donate__note strong{ color:var(--navy-deep); font-weight:700; }
+
+.donate__text{ margin:24px 0 0; max-width:62ch; font-size:1rem; color:var(--muted); }
+.donate__text strong{ color:var(--navy-deep); font-weight:700; }
+
+/* 兩個回覆管道：單純條列，一項一行 */
+.donate__ways{
+  list-style:none; margin:20px 0 0; padding:0;
+}
+.donate__ways li{
+  position:relative; padding:10px 0 10px 20px;
+  font-size:1rem; font-weight:700; color:var(--navy-deep);
+}
+.donate__ways li::before{
+  content:''; position:absolute; left:0; top:1.15em;
+  width:8px; height:2px; background:var(--red);
+}
+/* 連結常駐紅字加底線，一眼看得出可以點 */
+.donate__ways a{
+  color:var(--red); text-decoration:none;
+  border-bottom:1px solid currentColor;
+  transition:opacity .25s var(--ease);
+}
+.donate__ways a:hover{ opacity:.7; }
+.donate__ways i{ font-style:normal; font-size:.75em; margin-left:5px; opacity:.7; }
+
+.donate__way-note{
+  font-size:.8125rem; font-weight:400; color:var(--muted);
+}
+.donate__way-note::before{ content:'·'; margin:0 8px; opacity:.6; }
+
+/* 不設 max-width，桌機寬度下這句法規說明剛好排成一行；
+   視窗變窄時仍會自然換行，不會溢出。 */
+.donate__legal{
+  margin:clamp(40px,6vw,64px) 0 0;
+  padding-top:22px; border-top:1px solid var(--rule);
+  font-size:.8125rem; line-height:1.9; color:var(--muted);
+}
+
+/* 第二層頁面的返回連結 */
+.crumb{
+  margin:0 0 clamp(24px,4vw,36px);
+  font-family:var(--f-mono); font-size:.8125rem; letter-spacing:.06em;
+}
+.crumb a{
+  color:var(--muted); text-decoration:none;
+  transition:color .25s var(--ease);
+}
+.crumb a:hover{ color:var(--red); }
+
+/* ─── Podcast ─────────────────────────────── */
+
+.podcast{
+  display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  gap:clamp(36px,6vw,80px); align-items:center;
+}
+.podcast__title{
+  margin:0; font-size:clamp(2.1rem,5vw,3.6rem); font-weight:900;
+  line-height:1.2; letter-spacing:.04em; color:#fff;
+}
+.podcast__statement{
+  margin:18px 0 0; max-width:24ch;
+  font-size:clamp(1.125rem,2.1vw,1.5rem);
+  font-weight:700; line-height:1.5; letter-spacing:.06em; color:#fff;
+  padding-left:16px; border-left:3px solid var(--red);
+}
+.podcast__lead{ margin:22px 0 0; max-width:48ch; color:#A9BACE; font-size:1.0625rem; }
+.podcast__stat{
+  margin:28px 0 0; font-size:.8125rem; letter-spacing:.14em;
+  font-family:var(--f-mono); color:#7E93AC;
+}
+.podcast__stat span{
+  display:block; font-family:var(--f-disp); font-size:2.5rem; font-weight:800;
+  letter-spacing:-.02em; color:#fff; margin-bottom:2px;
+}
+
+.podcast__links{ list-style:none; margin:0; padding:0; border-top:1px solid rgba(255,255,255,.16); }
+.podcast__links a{
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+  padding:19px 4px; text-decoration:none; color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.16);
+  font-size:1.0625rem; font-weight:500;
+  transition:padding .3s var(--ease), color .3s var(--ease);
+}
+.podcast__links a:hover{ padding-left:16px; color:#FF8A94; }
+.podcast__links i{ font-style:normal; color:#7E93AC; transition:color .3s var(--ease); }
+.podcast__links a:hover i{ color:#FF8A94; }
+
+/* ─── 聯絡方式 ─────────────────────────────── */
+
+.contact{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1px; background:var(--rule); border:1px solid var(--rule);
+  border-radius:4px; overflow:hidden;
+}
+.contact__block{ background:var(--card); padding:30px 28px; }
+.contact__block--wide{ grid-column:span 2; }
+.contact__label{
+  margin:0 0 10px; font-family:var(--f-mono); font-size:.7rem;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+}
+.contact__value{
+  font-size:1.0625rem; font-weight:600; color:var(--navy-deep);
+  text-decoration:none; letter-spacing:.02em;
+}
+.contact__value--link{
+  border-bottom:1px solid var(--rule);
+  transition:color .25s var(--ease), border-color .25s var(--ease);
+}
+.contact__value--link:hover{ color:var(--red); border-bottom-color:var(--red); }
+
+.social{ margin-top:36px; display:flex; flex-wrap:wrap; align-items:center; gap:16px 28px; }
+.social__label{
+  margin:0; font-family:var(--f-mono); font-size:.7rem;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+}
+.social__list{ list-style:none; display:flex; flex-wrap:wrap; gap:10px; margin:0; padding:0; }
+
+/* 社群圖示：用 inline SVG，不外連圖檔也不會糊。
+   預設深藍統一調性，滑入時才亮出各平台自己的品牌色。 */
+.social__link{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:46px; height:46px;
+  border:1px solid var(--rule); border-radius:3px;
+  background:var(--card); color:var(--navy);
+  transition:border-color .25s var(--ease), color .25s var(--ease),
+             transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.social__icon{ width:20px; height:20px; fill:currentColor; display:block; }
+
+.social__link:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px -14px rgba(11,35,64,.5);
+}
+.social__link--fb:hover{ color:#1877F2; border-color:#1877F2; }
+.social__link--ig:hover{ color:#E4405F; border-color:#E4405F; }
+.social__link--yt:hover{ color:#FF0000; border-color:#FF0000; }
+.social__link--li:hover{ color:#0A66C2; border-color:#0A66C2; }
+
+/* ─── 頁尾 ─────────────────────────────────── */
+
+.foot{ background:var(--navy-deep); color:#8FA4BC; padding-block:56px; }
+.foot__inner{
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:32px 48px; align-items:flex-start;
+}
+/* 用深色底專用的白字版 logo，不要再套 brightness(0) invert(1)：
+   那會把紅色頭與灰色眼睛一起壓成純白，眼睛就消失了。 */
+.foot__logo{ height:40px; width:auto; }
+.foot__tagline{
+  margin:16px 0 0; font-size:.9375rem; letter-spacing:.14em; color:#fff; font-weight:500;
+}
+.foot__meta{ font-size:.8125rem; line-height:1.9; text-align:right; }
+.foot__meta p{ margin:0; }
+.foot__meta a{ color:#fff; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.3); }
+.foot__meta a:hover{ border-bottom-color:#fff; }
+
+/* ─── 捲動進場 ─────────────────────────────── */
+
+/* 只在 JS 可用時才預先隱藏；JS 失效時內容照常顯示 */
+.has-js .reveal{ opacity:0; transform:translateY(22px); }
+.has-js .reveal.is-in{
+  opacity:1; transform:none;
+  transition:opacity .7s var(--ease), transform .7s var(--ease);
+}
+
+/* ─── RWD ─────────────────────────────────── */
+
+@media (max-width:1000px){
+  .podcast{ grid-template-columns:1fr; }
+  .about__intro{ grid-template-columns:1fr; gap:clamp(28px,5vw,48px); }
+  .about__mark{ max-width:170px; justify-self:start; }
+}
+
+@media (max-width:820px){
+  .nav__toggle{ display:block; }
+  .nav__links{
+    position:fixed; inset:74px 0 auto 0;
+    flex-direction:column; align-items:stretch; gap:0;
+    background:var(--paper); border-bottom:1px solid var(--rule);
+    padding:8px var(--gut) 24px;
+    max-height:0; overflow:hidden; visibility:hidden;
+    transition:max-height .38s var(--ease), visibility .38s;
+  }
+  .nav__links.is-open{ max-height:calc(100vh - 74px); overflow-y:auto; visibility:visible; }
+  .nav__links a{ padding:15px 0; border-bottom:1px solid var(--rule-soft); }
+  .nav__links a::after{ display:none; }
+  .nav__cta{ margin-top:16px; text-align:center; padding:14px 20px !important; border-bottom:0 !important; }
+
+  .contact__block--wide{ grid-column:span 1; }
+  .press__link{ grid-template-columns:1fr; gap:8px; }
+  .press__o{ white-space:normal; }
+  .foot__inner{ flex-direction:column; }
+  .foot__meta{ text-align:left; }
+}
+
+@media (max-width:560px){
+  body{ font-size:16px; }
+  .people{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px; }
+  .person{ padding:16px; }
+  .person__cv{ display:none; }
+  .btn{ width:100%; }
+  .empty__actions .btn{ width:auto; }
+}
+
+/* ─── 尊重減少動態偏好 ─────────────────────── */
+
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+  .hero__eyebrow,.hero__en,.hero__zh,.hero__lead,.hero__actions,
+  .axis__caption,.axis__stop{ opacity:1; transform:none; }
+  .axis__track::before{ transform:scaleX(1); }
+  .axis__track::after{ transform:rotate(45deg) scale(1); }
+  .has-js .reveal{ opacity:1; transform:none; }
+}

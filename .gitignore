@@ -1,0 +1,25 @@
+# 內部簡介 PDF（9MB，不公開）
+2026影響力教育基金會.pdf
+
+# 原始素材資料夾（實際上線用的是 ./images/ 的英文檔名版）
+照片/
+
+# 系統檔
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# 本機預覽用，不上線
+.claude/
+
+# 內部工作文件，絕對不要公開
+# （含未對外呈現的成員名單、Wix 集合 ID、內部決策紀錄）
+CLAUDE.md
+website-brief.md
+
+# 未被網站使用的原始圖檔（實際用的是 ./images/ 英文檔名版）
+大頭logo.jpg
+官網BN.jpg
+影響力教育基金會LOGO - 已編輯.jpg
+logo灰字透明.png
+logo1120717_白字+透明_工作區域 1.png
