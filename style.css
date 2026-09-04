@@ -693,6 +693,68 @@ a{ color:inherit; }
 
 .press__more{ margin:clamp(32px,5vw,48px) 0 0; }
 
+/* 沒有配圖的舊報導集中在卡片下方，改用條列 */
+.press__group{
+  margin:clamp(44px,6vw,64px) 0 18px;
+  padding-top:clamp(28px,4vw,36px);
+  border-top:1px solid var(--rule);
+  display:flex; align-items:baseline; gap:10px;
+  font-size:.9375rem; font-weight:700; letter-spacing:.1em; color:var(--navy-deep);
+}
+.press__group span{
+  font-family:var(--f-mono); font-size:.72rem; font-weight:400;
+  letter-spacing:.06em; color:var(--muted);
+}
+
+/* ─── 文章專欄卡片 ─────────────────────────── */
+/* 圖片來自 Wix 圖床（static.wixstatic.com），enc_auto 會依瀏覽器送 AVIF／WebP */
+
+.arts{
+  list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(272px,1fr)); gap:24px;
+}
+.art{ display:flex; }
+.art__link{
+  width:100%; display:flex; flex-direction:column;
+  background:var(--card); border:1px solid var(--rule); border-radius:4px;
+  overflow:hidden; text-decoration:none; color:inherit;
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.art__link:hover{
+  transform:translateY(-4px);
+  border-color:var(--navy);
+  box-shadow:0 16px 34px -20px rgba(11,35,64,.4);
+}
+.art__img{
+  display:block; width:100%; height:auto; aspect-ratio:16/9;
+  object-fit:cover; background:var(--rule-soft);
+}
+.art__body{
+  display:flex; flex-direction:column; flex:1;
+  padding:20px 22px 22px;
+}
+.art__t{
+  display:block; font-size:.9875rem; font-weight:700; line-height:1.62;
+  color:var(--navy-deep); transition:color .25s var(--ease);
+}
+.art__link:hover .art__t{ color:var(--red); }
+.art__t::after{
+  content:'↗'; margin-left:8px; font-size:.75em; color:var(--red);
+  opacity:0; transition:opacity .25s var(--ease);
+}
+.art__link:hover .art__t::after{ opacity:1; }
+
+.art__meta{
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  margin-top:auto; padding-top:16px;
+  border-top:1px solid var(--rule-soft);
+}
+.art__by{ font-size:.8125rem; font-weight:500; color:var(--navy); }
+.art__d{
+  font-family:var(--f-mono); font-size:.72rem;
+  letter-spacing:.08em; color:var(--muted); white-space:nowrap;
+}
+
 /* ─── 捐款頁 ───────────────────────────────── */
 
 /* 帳號用等寬字，一眼看得出分段，抄寫時不易看錯 */
