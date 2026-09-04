@@ -222,7 +222,9 @@ a{ color:inherit; }
   gap:0; position:relative;
   /* 同上：盒子要撐到內容寬度，軸線才會畫滿四個階段 */
   width:max-content; min-width:100%;
-  --axis-progress:12%;
+  /* 起點已經移到第一個圓點，靜止狀態就是 0%（線從「探索」開始往後長）。
+     這裡若留舊的 12%，載入時會看到紅線先冒出來再縮回去。 */
+  --axis-progress:0%;
   transition:--axis-progress .45s var(--ease);
 }
 
@@ -231,12 +233,13 @@ a{ color:inherit; }
 @property --axis-progress{
   syntax:'<percentage>';
   inherits:true;
-  initial-value:12%;
+  initial-value:0%;
 }
 
-/* 時間軸主線 */
+/* 時間軸主線。起點是第一個圓點的中心（「探索」是起點，它左邊不該有線），
+   實際數值由 script.js 量好寫進 --axis-start；8px 是 JS 失效時的備援值。 */
 .axis__track::before{
-  content:''; position:absolute; left:0; right:0; top:7px; height:2px;
+  content:''; position:absolute; left:var(--axis-start,8px); right:0; top:7px; height:2px;
   background:linear-gradient(to right,
     var(--red) 0, var(--red) var(--axis-progress),
     var(--rule) var(--axis-progress), var(--rule) 100%);
@@ -426,8 +429,10 @@ a{ color:inherit; }
   --tl-progress:1%;
   transition:--tl-progress .45s var(--ease);
 }
+/* 線從第一個圓點的中心開始（2017 是起點，它左邊不該有線）。
+   實際數值由 script.js 量好寫進 --tl-start；8px 是 JS 失效時的備援值。 */
 .tl__track::before{
-  content:''; position:absolute; left:0; right:0; top:7px; height:2px;
+  content:''; position:absolute; left:var(--tl-start,8px); right:0; top:7px; height:2px;
   background:linear-gradient(to right,
     var(--red) 0, var(--red) var(--tl-progress),
     var(--rule) var(--tl-progress), var(--rule) 100%);
@@ -472,7 +477,8 @@ a{ color:inherit; }
 /* 內容面板：預留高度，切換年份時版面不跳動 */
 .tl__panels{
   margin-top:26px; padding-top:26px; border-top:1px solid var(--rule);
-  min-height:132px;
+  /* 撐到最高的那一年（2017，七項），桌機切換年份時頁面才不會跳動 */
+  min-height:148px;
 }
 .tl__hint{
   margin:0; font-size:.9375rem; color:var(--muted); letter-spacing:.04em;
@@ -482,6 +488,24 @@ a{ color:inherit; }
   font-weight:500; letter-spacing:.04em; color:var(--red); line-height:1;
 }
 .tl__text{ margin:0; font-size:.9375rem; color:var(--muted); max-width:70ch; }
+
+/* 大事紀內容改條列：桌機兩欄，避免面板太高 */
+.tl__list{
+  list-style:none; margin:0; padding:0; max-width:74ch;
+  display:grid; grid-template-columns:1fr; gap:4px 34px;
+}
+/* 桌機固定兩欄：三欄對中文太窄，長項目會折行 */
+@media (min-width:720px){
+  .tl__list{ grid-template-columns:1fr 1fr; }
+}
+.tl__list li{
+  position:relative; padding-left:14px;
+  font-size:.9375rem; color:var(--muted); line-height:1.72;
+}
+.tl__list li::before{
+  content:''; position:absolute; left:0; top:.82em;
+  width:6px; height:1px; background:var(--red);
+}
 
 /* JS 可用時才收合；JS 失效就整份攤開，內容不會消失 */
 .has-js .tl__panel{ display:none; }
@@ -960,6 +984,56 @@ a{ color:inherit; }
   .press__o{ white-space:normal; }
   .foot__inner{ flex-direction:column; }
   .foot__meta{ text-align:left; }
+}
+
+
+/* 手機版：大事紀時間軸轉直向 —— 左欄年份、右欄該年內容。
+   斷點與 .tl__list 的 720px 對齊；桌機維持橫向。 */
+@media (max-width:719px){
+  .tl{
+    display:grid; grid-template-columns:auto minmax(0,1fr);
+    gap:0 18px; align-items:start;
+  }
+
+  /* 直向不需要橫向捲動，也不用再向外出血 */
+  .tl__scroll{
+    overflow:visible;
+    margin-inline:0; padding-inline:0; padding-bottom:0;
+  }
+
+  /* 九個年份從九欄改成九列 */
+  .tl__track{
+    grid-template-columns:1fr;
+    width:max-content; min-width:0;
+  }
+
+  /* 紅線改成由上往下推進。起點是第一個圓點的中心（2017 是起點，
+     它上面不該有線），實際數值由 script.js 量好寫進 --tl-start；
+     這裡的 22px 是 JS 還沒跑或失效時的備援值。 */
+  .tl__track::before{
+    left:7px; right:auto; top:var(--tl-start,22px); bottom:0;
+    width:2px; height:auto;
+    background:linear-gradient(to bottom,
+      var(--red) 0, var(--red) var(--tl-progress),
+      var(--rule) var(--tl-progress), var(--rule) 100%);
+  }
+  /* 方向箭頭跟著轉向下 */
+  .tl__track::after{
+    left:3px; right:auto; top:auto; bottom:0;
+    transform:rotate(135deg);
+  }
+
+  .tl__year{
+    display:flex; align-items:center;
+    min-height:44px;              /* 手指點得到的大小 */
+    padding:10px 0 10px 30px;
+  }
+  .tl__dot{ top:50%; left:0; transform:translateY(-50%); }
+
+  /* 內容移到右欄，原本橫向版的上分隔線與保留高度都不需要了 */
+  .tl__panels{
+    margin-top:0; padding-top:0; border-top:0; min-height:0;
+  }
 }
 
 @media (max-width:560px){

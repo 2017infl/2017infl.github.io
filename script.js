@@ -132,6 +132,20 @@
   var axisLinks = document.querySelectorAll('.axis__link');
   var axisCurrent = null;
 
+  // 紅線從第一個圓點的中心開始 —— 「探索」是起點，它左邊不該有線。
+  // 起點量出來寫進 --axis-start 給 CSS 用，數字只維護一份。
+  function axisLineStart() {
+    var firstDot = axisTrack && axisTrack.querySelector('.axis__dot');
+    if (!firstDot) return 0;
+
+    var trackBox = axisTrack.getBoundingClientRect();
+    var dotBox = firstDot.getBoundingClientRect();
+    var start = (dotBox.left + dotBox.width / 2) - trackBox.left;
+
+    axisTrack.style.setProperty('--axis-start', start.toFixed(1) + 'px');
+    return start;
+  }
+
   // 把紅線推進到指定階段的圓點中心（與大事紀同一套算法）
   function axisDrawLine(link) {
     if (!axisTrack || !link) return;
@@ -140,10 +154,13 @@
 
     var trackBox = axisTrack.getBoundingClientRect();
     var dotBox = dot.getBoundingClientRect();
-    if (!trackBox.width) return;
+    // 座標系從第一個圓點起算，與 CSS 的 left:var(--axis-start) 對齊
+    var start = axisLineStart();
+    var span = trackBox.width - start;
+    if (!span) return;
 
-    var x = (dotBox.left + dotBox.width / 2) - trackBox.left;
-    var pct = Math.max(0, Math.min(100, (x / trackBox.width) * 100));
+    var x = (dotBox.left + dotBox.width / 2) - trackBox.left - start;
+    var pct = Math.max(0, Math.min(100, (x / span) * 100));
     axisTrack.style.setProperty('--axis-progress', pct.toFixed(2) + '%');
   }
 
@@ -170,6 +187,7 @@
       if (axisCurrent) { axisDrawLine(axisCurrent); return; }
       axisDrawLine(axisLinks[0]);
     };
+    axisLineStart();
     window.addEventListener('load', axisRest);
     window.addEventListener('resize', axisRest);
 
@@ -185,7 +203,28 @@
   var tlTrack = document.querySelector('.tl__track');
   var tlCurrent = null;
 
-  // 把紅線推進到指定年份的圓點中心
+  // 量出第一個圓點的中心（沿著軸的方向，相對於軌道起點）。
+  // 紅線從這裡開始 —— 2017 是起點，它前面不該有線。橫向、直向都適用。
+  // 起點寫進 --tl-start 給 CSS 用，數字只維護一份，不會兩邊對不上。
+  function tlLineStart() {
+    var firstDot = tlTrack && tlTrack.querySelector('.tl__dot');
+    if (!firstDot) return 0;
+
+    var trackBox = tlTrack.getBoundingClientRect();
+    var dotBox = firstDot.getBoundingClientRect();
+    var vertical = trackBox.height > trackBox.width;
+
+    var start = vertical
+      ? (dotBox.top + dotBox.height / 2) - trackBox.top
+      : (dotBox.left + dotBox.width / 2) - trackBox.left;
+
+    tlTrack.style.setProperty('--tl-start', start.toFixed(1) + 'px');
+    return start;
+  }
+
+  // 把紅線推進到指定年份的圓點中心。
+  // 手機版時間軸是直的，線要沿著 Y 軸推進；方向用實際幾何判斷，
+  // 不在這裡寫死斷點，才不會跟 CSS 的斷點各改各的。
   function tlDrawLine(btn) {
     if (!tlTrack || !btn) return;
     var dot = btn.querySelector('.tl__dot');
@@ -193,10 +232,21 @@
 
     var trackBox = tlTrack.getBoundingClientRect();
     var dotBox = dot.getBoundingClientRect();
-    if (!trackBox.width) return;
+    var vertical = trackBox.height > trackBox.width;
+    // 座標系從第一個圓點起算，與 CSS 的 var(--tl-start) 對齊
+    var start = tlLineStart();
+    var offset, span;
 
-    var x = (dotBox.left + dotBox.width / 2) - trackBox.left;
-    var pct = Math.max(0, Math.min(100, (x / trackBox.width) * 100));
+    if (vertical) {
+      span = trackBox.height - start;
+      offset = (dotBox.top + dotBox.height / 2) - trackBox.top - start;
+    } else {
+      span = trackBox.width - start;
+      offset = (dotBox.left + dotBox.width / 2) - trackBox.left - start;
+    }
+    if (!span) return;
+
+    var pct = Math.max(0, Math.min(100, (offset / span) * 100));
     tlTrack.style.setProperty('--tl-progress', pct.toFixed(2) + '%');
   }
 
@@ -226,10 +276,16 @@
     btn.addEventListener('click', function () { showYear(btn); });
   });
 
-  // 視窗改變大小或時間軸橫向捲動時，紅線長度要跟著重算
+  // 視窗改變大小或時間軸橫向捲動時，紅線的起點與長度都要跟著重算。
+  // 起點要在還沒點過任何年份時就先算好，否則直向的線頭會露在 2017 上方。
   if (tlTrack) {
     var tlScroll = document.querySelector('.tl__scroll');
-    var redraw = function () { if (tlCurrent) tlDrawLine(tlCurrent); };
+    var redraw = function () {
+      tlLineStart();
+      if (tlCurrent) tlDrawLine(tlCurrent);
+    };
+    tlLineStart();
+    window.addEventListener('load', redraw);
     window.addEventListener('resize', redraw);
     if (tlScroll) tlScroll.addEventListener('scroll', redraw, { passive: true });
   }
