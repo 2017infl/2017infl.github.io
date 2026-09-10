@@ -655,6 +655,51 @@ a{ color:inherit; }
 }
 .partners .chips{ margin-top:0; }
 
+/* ─── 參與單位頁尾的合作邀請 ───────────────── */
+/* 深色底沿用 Podcast 那一段的語彙（同一組 #fff／#A9BACE／#7E93AC）。
+   ⚠️ 這一段必須放在返回按鈕之前 —— 頁尾 .foot 也是 --navy-deep，
+   直接貼著會連成一大塊深色，中間要有淺色區隔開。 */
+.join{ max-width:760px; }
+
+.join__title{
+  margin:0;
+  font-family:var(--f-disp);
+  font-size:clamp(2rem,6vw,3.2rem);
+  font-weight:800; line-height:1; letter-spacing:-.03em; color:#fff;
+}
+.join__title em{ font-style:normal; color:var(--red); }
+
+.join__lead{ margin:22px 0 0; max-width:48ch; font-size:1.0625rem; color:#A9BACE; }
+
+.join__ways{
+  list-style:none; margin:30px 0 0; padding:26px 0 0;
+  border-top:1px solid rgba(255,255,255,.14);
+  display:grid; gap:14px;
+}
+.join__ways li{ font-size:.9375rem; color:#A9BACE; }
+.join__ways b{
+  display:inline-block; min-width:8.5em; margin-right:10px;
+  color:#fff; font-weight:700; letter-spacing:.06em;
+}
+
+.join__mail{ margin:32px 0 0; }
+.join__mail a{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--f-mono);
+  font-size:clamp(1rem,2.6vw,1.375rem); letter-spacing:.02em;
+  color:#fff; text-decoration:none;
+  padding-bottom:6px; border-bottom:2px solid var(--red);
+  transition:color .25s var(--ease), border-color .25s var(--ease);
+}
+.join__mail a:hover{ color:#FF8A94; border-bottom-color:#FF8A94; }
+/* 信封圖示同樣用 inline SVG，stroke 吃 currentColor，
+   hover 時會跟著文字一起變色，不用另外寫規則。 */
+.join__mail-icon{
+  flex-shrink:0; width:1.15em; height:1.15em;
+  /* 等寬字的視覺中線比方框中心略高，往下推一點才對齊 */
+  transform:translateY(1px);
+}
+
 /* ─── 空狀態（最近活動 / 文章專欄） ─────────── */
 
 .empty{
@@ -1105,6 +1150,9 @@ a{ color:inherit; }
   }
   .has-js .person__toggle::after{ content:'＋'; font-size:1.125rem; }
   .has-js .person.is-open .person__toggle::after{ content:'－'; }
+
+  /* 窄螢幕塞不下「標籤 ＋ 說明」同一行，改成標籤自己一行 */
+  .join__ways b{ display:block; min-width:0; margin:0 0 4px; }
 
   .btn{ width:100%; }
   .empty__actions .btn{ width:auto; }
