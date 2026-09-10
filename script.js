@@ -290,6 +290,20 @@
     if (tlScroll) tlScroll.addEventListener('scroll', redraw, { passive: true });
   }
 
+  /* ── 董事卡片：手機版點開學經歷 ───────────────
+     按鈕在桌機是 display:none，不會被點到也不會被 Tab 到，
+     所以這裡不需要判斷斷點 —— 斷點只寫在 CSS 一個地方。 */
+  var personToggles = document.querySelectorAll('.person__toggle');
+
+  personToggles.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var card = btn.closest('.person');
+      if (!card) return;
+      var open = card.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+
   /* ── 數字跑動 ───────────────────────────────── */
   var counters = document.querySelectorAll('[data-count]');
 

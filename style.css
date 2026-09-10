@@ -506,7 +506,7 @@ a{ color:inherit; }
   font-size:.9375rem; color:var(--muted); line-height:1.72;
 }
 .tl__list li::before{
-  content:''; position:absolute; left:0; top:.82em;
+  content:''; position:absolute; left:0; top:.86em;
   width:6px; height:1px; background:var(--red);
 }
 
@@ -561,9 +561,13 @@ a{ color:inherit; }
   font-size:.8125rem; color:var(--muted); line-height:1.72;
 }
 .person__cv li{ position:relative; padding-left:13px; }
+/* 展開學經歷的按鈕只在手機出現（見 RWD 區塊）。桌機直接顯示全部學經歷，
+   按鈕保持 display:none，也就不會被鍵盤 Tab 到。 */
+.person__toggle{ display:none; }
+
 .person__cv li::before{
-  content:''; position:absolute; left:0; top:.7em;
-  width:5px; height:1px; background:var(--red);
+  content:''; position:absolute; left:0; top:.86em;
+  width:6px; height:1px; background:var(--red);
 }
 
 /* ─── 核心專案 ─────────────────────────────── */
@@ -844,8 +848,8 @@ a{ color:inherit; }
   font-size:1rem; font-weight:700; color:var(--navy-deep);
 }
 .donate__ways li::before{
-  content:''; position:absolute; left:0; top:1.15em;
-  width:8px; height:2px; background:var(--red);
+  content:''; position:absolute; left:0; top:calc(10px + .925em);
+  width:6px; height:1px; background:var(--red);
 }
 /* 連結常駐紅字加底線，一眼看得出可以點 */
 .donate__ways a{
@@ -1079,7 +1083,29 @@ a{ color:inherit; }
   body{ font-size:16px; }
   .people{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px; }
   .person{ padding:16px; }
-  .person__cv{ display:none; }
+
+  /* 手機是兩欄，卡片內容區只有約 135px 寬，學經歷擠在裡面很難讀，
+     所以預設收起、點「學經歷」才展開。展開的卡片跨滿兩欄，
+     文字才有整個螢幕的寬度可用。
+     ⚠️ 用 .has-js 收起 —— JS 失效時學經歷要照常看得到，不能整段消失。 */
+  .has-js .person__cv{ display:none; }
+  .has-js .person.is-open .person__cv{ display:block; }
+  .has-js .person.is-open{ grid-column:1 / -1; }
+  /* 卡片變全寬後照片會跟著撐到 350px，壓掉學經歷的版位，所以限制寬度 */
+  .has-js .person.is-open .person__photo{ max-width:150px; }
+
+  /* 按鈕上沒有可見文字，只留一個 ＋。文字放在 .sr-only 裡給螢幕報讀軟體，
+     否則這顆按鈕對輔助科技來說是沒有名稱的。 */
+  .has-js .person__toggle{
+    display:flex; align-items:center; justify-content:center;
+    width:100%; margin-top:12px; padding:0;
+    min-height:44px;              /* 手指點得到的大小 */
+    background:none; border:0; border-top:1px solid var(--rule-soft);
+    font:inherit; line-height:1; color:var(--red); cursor:pointer;
+  }
+  .has-js .person__toggle::after{ content:'＋'; font-size:1.125rem; }
+  .has-js .person.is-open .person__toggle::after{ content:'－'; }
+
   .btn{ width:100%; }
   .empty__actions .btn{ width:auto; }
 }
