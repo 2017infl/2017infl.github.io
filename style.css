@@ -707,6 +707,13 @@ a{ color:inherit; }
   color:var(--navy-deep); transition:color .25s var(--ease);
 }
 .ev__link:hover .ev__t{ color:var(--red); }
+/* 活動簡介取自 Wix 的 description，長度不一，限三行讓卡片高度不會落差太大。
+   沒填簡介的活動就不輸出這個元素，不要自己補文案。 */
+.ev__desc{
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3;
+  overflow:hidden;
+  margin-top:10px; font-size:.8125rem; line-height:1.7; color:var(--muted);
+}
 .ev__place{ display:block; margin-top:10px; font-size:.8125rem; color:var(--muted); }
 .ev__more{
   display:block; margin-top:auto; padding-top:16px;
