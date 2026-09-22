@@ -1,0 +1,10 @@
+# 2017infl.github.io 是給長官審閱的臨時網址，正式上線前不希望被搜尋引擎收錄。
+#
+# 注意：這裡刻意「不」使用 Disallow。擋住爬取會讓 Google 讀不到各頁的
+# noindex 標籤，已被發現的網址反而會繼續留在搜尋結果裡（只是沒有描述）。
+# 因此允許爬取，由每一頁的 <meta name="robots" content="noindex"> 負責擋收錄。
+#
+# ⚠️ 正式換上 www.2017infl.org 時，這個檔案與各頁的 noindex 都必須移除，
+#    否則新網站永遠不會出現在 Google 搜尋結果。
+User-agent: *
+Allow: /
